@@ -62,8 +62,11 @@ let g:haskell_conceal_enumerations = 0
 let g:haskell_autotags = 1
 let g:haskell_tags_generator = "hasktags"
 
-" let g:haddock_browser = "lynx"
-" let g:haddock_docdir = expand("~/.cabal/share/doc")
+let g:haddock_browser = "lynx"
+let g:haddock_docdir = expand("~/.cabal/share/doc")
+
+" Поиск и замена слова под курсором
+nmap ; :%s/\<<c-r>=expand("<cword>")<cr>\>/
 
 " Фолдинг по отсупам
 set foldmethod=indent
@@ -100,10 +103,16 @@ autocmd InsertLeave * set nocursorline
 
 let NERDTreeIgnore = ['\.pyc$', '\.o']
 
+function! IDocWithRefresh(name) 
+  call IDoc(a:name)
+  redraw!
+endfunction 
+
 nmap ?t :GhcModType<cr>
 nmap ?T :GhcModTypeClear<cr>
 nmap ?I :GhcModTypeInsert<cr>
 nmap ?i :GhcModInfo<cr>
+nmap ?h :call IDocWithRefresh("<c-r>=expand("<cword>")<cr>")<cr>
 
 " F3 - просмотр ошибок
 nmap <F3> :copen<cr>
@@ -115,12 +124,22 @@ nmap <F5> <Esc>:BufExplorer<cr>
 vmap <F5> <esc>:BufExplorer<cr>
 imap <F5> <esc><esc>:BufExplorer<cr>
 
+" F8 - change current directory to directory of current file
+map <F8> :cd %:p:h<cr>
+vmap <F8> <esc>:cd %:p:h<cr>
+imap <F8> <esc>:cd %:p:h<cr>
+
 " F9 - "make" команда
 map <F9> :wa<cr><esc>:make<cr>
 vmap <F9> <esc>:wa<cr><esc>:make<cr>i
 imap <F9> <esc>:wa<cr><esc>:make<cr>i
 
-" F10 - toggle NERDTree
-nmap <F10> <Esc>:NERDTreeToggle<cr>
-vmap <F10> <esc>:NERDTreeToggle<cr>
-imap <F10> <esc><esc>:NERDTreeToggle<cr>
+function! ToggleBars()
+  NERDTreeToggle
+  Tagbar
+endfunction 
+
+" F10 - toggle bars
+nmap <F10> :call ToggleBars()<cr>
+vmap <F10> <esc>:call ToggleBars()<cr>
+imap <F10> <esc>:call ToggleBars()<cr>
